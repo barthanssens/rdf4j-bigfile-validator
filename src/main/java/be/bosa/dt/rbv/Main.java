@@ -30,19 +30,12 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.PipedReader;
-import java.io.PipedWriter;
-import java.util.Iterator;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 
 import org.eclipse.rdf4j.rio.RDFFormat;
-import org.eclipse.rdf4j.rio.RDFHandlerException;
-import org.eclipse.rdf4j.rio.RDFParseException;
 import org.eclipse.rdf4j.rio.RDFParser;
 import org.eclipse.rdf4j.rio.Rio;
 import org.eclipse.rdf4j.rio.RioSetting;
@@ -66,7 +59,7 @@ public class Main {
 			BasicParserSettings.VERIFY_URI_SYNTAX,
 			NTriplesParserSettings.FAIL_ON_INVALID_LINES
 	};
-
+/*
 	private static PipedReader[] prs;
 	private static PipedWriter[] pws;
 	private static ExecutorService executor;
@@ -102,6 +95,7 @@ public class Main {
 			});
 		}
 	}
+*/
 
 	private static void validate(String inFile, int cores) throws IOException {
 		long nr = 0;
@@ -110,6 +104,12 @@ public class Main {
 												new BufferedInputStream(new FileInputStream(inFile)));
 			BufferedReader r = new BufferedReader(new InputStreamReader(bcis))) {
 
+			RDFParser parser = Rio.createParser(RDFFormat.NTRIPLES);
+			for (RioSetting setting: NON_FATAL_ERRORS) {
+				parser.getParserConfig().addNonFatalError(setting).set(setting, true);
+			}
+			parser.parse(bcis);
+	/*	return parser;
 			Iterator<String> iter = r.lines().iterator();
 			while (iter.hasNext()) {
 				pws[(int)(nr % cores)].write(iter.next());
@@ -117,7 +117,7 @@ public class Main {
 				if (nr % 100_000 == 0) {
 					LOG.log(Level.INFO, "Read {0} lines", nr);
 				}
-			}
+			} */
 		}
 		LOG.log(Level.INFO, "Read {0} lines", nr);
 	}
@@ -129,19 +129,19 @@ public class Main {
 
 		int cores = Integer.valueOf(args[0]);
 
-		prs = new PipedReader[cores];
+	/*	prs = new PipedReader[cores];
 		pws = new PipedWriter[cores];
 
 		executor = Executors.newFixedThreadPool(cores);
 
-		createThreads(cores);
+		createThreads(cores); */
 		validate(args[1], cores);
 
-		executor.shutdown();
+/*		executor.shutdown();
 	
 		for (int i = 0; i < cores; i++) {
 			pws[i].close();
 			prs[i].close();
-		}
-	}
+		} */
+	} 
 }
