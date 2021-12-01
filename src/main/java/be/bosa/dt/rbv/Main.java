@@ -41,6 +41,7 @@ import org.eclipse.rdf4j.rio.Rio;
 import org.eclipse.rdf4j.rio.RioSetting;
 import org.eclipse.rdf4j.rio.helpers.BasicParserSettings;
 import org.eclipse.rdf4j.rio.helpers.NTriplesParserSettings;
+import org.eclipse.rdf4j.rio.helpers.ParseErrorLogger;
 
 /**
  *
@@ -108,7 +109,8 @@ public class Main {
 			for (RioSetting setting: NON_FATAL_ERRORS) {
 				parser.getParserConfig().addNonFatalError(setting).set(setting, true);
 			}
-			parser.parse(bcis);
+			parser.setParseErrorListener(new ParseErrorLogger());
+			parser.parse(r);
 	/*	return parser;
 			Iterator<String> iter = r.lines().iterator();
 			while (iter.hasNext()) {
